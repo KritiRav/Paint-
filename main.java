@@ -1,5 +1,17 @@
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.util.Observable;
+import java.util.Observer;
+import java.awt.*;
+import java.awt.Shape;
+
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
 
 
 import java.awt.BorderLayout;
@@ -22,6 +34,8 @@ public class main {
     w.createColorBar(frame);
     frame.getContentPane().add(window.content, BorderLayout.CENTER);
    //frame.getContentPane().add(window, BorderLayout.CENTER);
+    mainMenuView menu = new mainMenuView(window);
+    frame.setJMenuBar(menu.menuBar);
     frame.getContentPane().add(window.buttonsPanel, BorderLayout.SOUTH);
     frame.setVisible(true);
 }

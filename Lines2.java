@@ -7,7 +7,7 @@ import java.io.*;
 import javax.sound.sampled.Line;
 import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;
-
+import static javax.swing.ScrollPaneConstants.*;
 
   
 public class Lines2 extends JPanel
@@ -15,6 +15,7 @@ public class Lines2 extends JPanel
     // Instance variables
     DrawingPanel imagepanel;
     JPanel content;
+    JScrollPane scroller; 
     static String whichShape = new String("line");
     JPanel buttonsPanel;
     LineWrangler wrangler;
@@ -36,7 +37,7 @@ public class Lines2 extends JPanel
         JButton lineButton = new JButton("Line");
         JButton thickButton = new JButton("Thick");
         JButton colorBorderButton = new JButton("Color Border");
-        JButton eraseButton = new JButton("Erase/Select");
+        JButton eraseButton = new JButton("Erase");
         content = new JPanel();
         content.setLayout(new BorderLayout());
         // Create JPanel canvas to hold the picture
@@ -87,12 +88,20 @@ public class Lines2 extends JPanel
         
   
         // Create JScrollPane to hold the canvas containing the picture
-        JScrollPane scroller = new JScrollPane(imagepanel);
+        scroller = new JScrollPane(imagepanel);
+       // JPanel nonScrol = new JPanel(imagepanel); 
         scroller.setPreferredSize(new Dimension(500,300));
         scroller.setViewportBorder(BorderFactory.createLineBorder(Color.black));
         // Add scroller pane to Panel
         content.add(scroller,"Center");
-  
+    }
+    public void setViewFull() {
+        scroller.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_ALWAYS);
+        scroller.setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_ALWAYS);
+    }
+    public void setViewFit() {
+        scroller.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
+        scroller.setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_NEVER);
     }
 
     public class Line {
@@ -139,18 +148,42 @@ public class Lines2 extends JPanel
             this.isSelected = isSelected;
         }
     }
+    public class Circle {
+        Ellipse2D.Double c;
+        Color colorBorder;
+        double thickness; 
+        Color colorFill;
+        Boolean isSelected;
+    
+        Circle(double x, double y, double w, double h, Color border, double thick, Color fill, Boolean isSelected) {
+            this.c = new Ellipse2D.Double(x,y,w,h); 
+            colorBorder=border;
+            thickness=thick;
+            colorFill=fill;
+            this.isSelected=isSelected;
+        }
+        public void setCircle(double x, double y, double w, double h, Color border, double thick, Color fill, Boolean isSelected) {
+            this.c = new Ellipse2D.Double(x,y,w,h);
+            colorBorder=border;
+            thickness=thick;
+            colorFill = fill;
+            this.isSelected = isSelected;
+        }
+    }
     class DrawingPanel extends JPanel
     {
        // List lines;                      // j2se 1.4-
         // optional generic declaration for j2se 1.5+
         List<Line> lines = new ArrayList<Line>();
         List<Rect> rects = new ArrayList<Rect>();
+        List <Circle> circles = new ArrayList<Circle>();
         
         public DrawingPanel()
         {
             //ines = new ArrayList();            // j2se 1.4-
             lines = new ArrayList<Line>();  // j2se 1.5+
             rects = new ArrayList<Rect>();
+            circles = new ArrayList<Circle>();
             setBackground(Color.white);
             setPreferredSize(new Dimension(750,950));
         } 
@@ -179,6 +212,15 @@ public class Lines2 extends JPanel
                 } g2.draw((Rectangle2D)rects.get(j).r);
                 g2.setColor(rects.get(j).colorFill);
                 g2.fill(rects.get(j).r);
+            } for(int j = 0; j < circles.size(); j++) {
+                g2.setColor(circles.get(j).colorBorder);
+                if (circles.get(j).isSelected) {
+                    g2.setStroke(new BasicStroke((float)7));
+                } else {
+                g2.setStroke(new BasicStroke((float)circles.get(j).thickness));
+                } g2.draw((Ellipse2D.Double)circles.get(j).c);
+                g2.setColor(circles.get(j).colorFill);
+                g2.fill(circles.get(j).c);
             }
         }
   
@@ -215,11 +257,26 @@ public class Lines2 extends JPanel
                 x=start.getX();
                 y=start.getY();
             }
-            
             rects.add(new Rect(x, y, width, length, borderCol, thick, borderFill, isSelected));
             repaint();
         }
-
+        public void addCircle(Point start, Point end, Color borderCol, double thick,Color borderFill, Boolean isSelected) {
+            System.out.println("addCircle called");
+            double minX = Math.min(start.getX(),end.getX());
+            double minY = Math.min(start.getY(), end.getY());
+            double maxY = Math.max(start.getY(),end.getY());
+            double maxX = Math.max(start.getX(),end.getX());
+            double width = maxX-minX;
+            double length = maxY-minY;
+            circles.add(new Circle(minX, minY, width, length, borderCol, thick, borderFill, isSelected));
+            repaint();
+        }
+        public void moveCircle (Circle cir, Point p, Point end) {
+            double distX = end.getX() - p.getX();
+            double distY = end.getY() - p.getY();
+            cir.setCircle(cir.c.getX()+distX, cir.c.getY()+distY, cir.c.getWidth(), cir.c.getHeight(), cir.colorBorder, cir.thickness, cir.colorFill, cir.isSelected);
+            repaint(); 
+        }
         public void moveRect(Rect rec, Point p, Point end) {
             double distX = end.getX() - p.getX();
             double distY = end.getY() - p.getY();
@@ -234,7 +291,10 @@ public class Lines2 extends JPanel
             line.setLine(line.l.getX1()+distX, line.l.getY1()+distY, line.l.getX2()+distX, line.l.getY2()+distY, line.colorBorder,line.thickness, line.isSelected);
             repaint();
         }
-  
+        public void removeCircle(Circle c) {
+            circles.remove(c);
+            repaint();
+        }
         public void removeRect(Rect r) {
             rects.remove(r);
             repaint();
@@ -247,6 +307,7 @@ public class Lines2 extends JPanel
         public void eraseAll () {
             rects.clear();
             lines.clear();
+            circles.clear();
             repaint();
         }
     }
@@ -259,6 +320,7 @@ class LineWrangler extends MouseInputAdapter
     Point start;
     Lines2.Line selectedLine;
     Lines2.Rect selectedRectangle;
+    Lines2.Circle selectedCircle;
     boolean dragging;
     final int MIN_DIST = 3;
     final int MIN_DRAG_DIST = 5;
@@ -267,6 +329,7 @@ class LineWrangler extends MouseInputAdapter
     Boolean haveSelection=false;
     List<Lines2.Line> list;
     List<Lines2.Rect> rectList;  
+    List<Lines2.Circle> circleList;
     static String shape; 
     Color colorBorder=Color.black;
     double thickness = 2; 
@@ -287,6 +350,9 @@ class LineWrangler extends MouseInputAdapter
     }
     public void setBorderCol(Color b) {
         colorBorder=b;
+    }
+    public void setThickness(double t) {
+        thickness = t;
     }
     public void setFillCol(Color b) {
         colorFill=b;
@@ -310,24 +376,36 @@ class LineWrangler extends MouseInputAdapter
         list = drawingPanel.lines;   // j2se 1.5+
         //List list = drawingPanel.lines;             // j2se 1.4-
         rectList = drawingPanel.rects;
+        circleList = drawingPanel.circles;
         for (int j = 0; j < list.size(); j++) {
             if (erase && list.get(j).l.ptLineDist(p) < MIN_DIST) {
                 drawingPanel.removeLine(list.get(j));
             } else if(!erase) {
+                if (list.get(j).l.ptLineDist(p) < MIN_DIST) {
                 for (int i = 0; i < list.size(); i++) {
                     list.get(i).isSelected = false;
                 }
                 list.get(j).isSelected=true;
+                }
             }
         }
         for (int j = 0; j < rectList.size(); j++) {
             if (erase && p.getX()>rectList.get(j).r.getX() && p.getX()<rectList.get(j).r.getX()+rectList.get(j).r.getWidth() && p.getY()>rectList.get(j).r.getY() && p.getY()<=rectList.get(j).r.getY()+rectList.get(j).r.getHeight()) {
                 drawingPanel.removeRect(rectList.get(j));
             } else if (!erase) {
+                if (rectList.get(j).r.contains(p.getX(),p.getY())) {
                 for (int i = 0; i < rectList.size(); i++) {
                     rectList.get(i).isSelected = false;
-                }
+                } 
                 rectList.get(j).isSelected=true;
+                }
+            }
+        }for (int j = 0; j < circleList.size(); j++) {
+            if (erase && circleList.get(j).c.contains(p.getX(),p.getY())) {
+                drawingPanel.removeCircle(circleList.get(j));
+            } else if (!erase) {
+                // check if selected, then unselect everything else and select this shape
+                //if it falls within the bounds 
             }
         }
     }
@@ -368,6 +446,18 @@ class LineWrangler extends MouseInputAdapter
                     break; 
                     }   
                 }
+                for(int j = 0; j < circleList.size(); j++) {
+                    Lines2.Circle cir = circleList.get(j);
+                    if(cir.c.contains(p.getX(),p.getY())) {
+                        haveSelection = true; 
+                        start=p;
+                        selectedCircle = cir;
+                        if(!erase) {
+                        drawingPanel.moveCircle(cir, p, end);
+                        }
+                        break; 
+                        }   
+                    }
             // if p is not near a line, add a line at p
             if(!haveSelection) {
                 System.out.println("value of shape is:"+shape+"that's it");
@@ -376,6 +466,8 @@ class LineWrangler extends MouseInputAdapter
                 } else if (shape==null) {
                 } else if (getShape().equals("line")&&!erase) {
                     drawingPanel.addLine(p,end,colorBorder,thickness,isSelected);
+                } else if (getShape().equals("circle")&&!erase) {
+                    drawingPanel.addCircle(p,end,colorBorder,thickness, colorFill, isSelected);
                 }
             }
         }

@@ -12,6 +12,7 @@ import java.awt.BorderLayout;
 import java.util.LinkedList;
 import java.util.List;
 
+//this is another view 
 public class widget {  
     static JToggleButton b;
     static JToggleButton  b2;
@@ -56,9 +57,9 @@ public class widget {
     }
     public void createColorBar(JFrame f) {
     
-    thick1 = new JToggleButton(new ImageIcon("line_thin.jpg"));
-    thick2 = new JToggleButton(new ImageIcon("line_med.jpg"));
-    thick3 = new JToggleButton(new ImageIcon("line_thick.png"));
+    thick1 = new JToggleButton(new ImageIcon("line_thin.png"));
+    thick2 = new JToggleButton(new ImageIcon("line_thick.png"));
+    thick3 = new JToggleButton(new ImageIcon("line_med.png"));
     undock = new JToggleButton("undock");
     JToggleButton b = new JToggleButton(new ImageIcon("color-blue.jpg"));
     JToggleButton b2 = new JToggleButton(new ImageIcon("color-pink.jpg"));
@@ -277,7 +278,7 @@ public void actionPerformed(ActionEvent e){
    holdButtons.setLayout(new GridLayout(5,2));
    holdButtons.setPreferredSize(new Dimension(200,90));
    holdButtons.setMaximumSize(new Dimension(350,90));
-   holdButtons.setMinimumSize(new Dimension(50,80));
+   holdButtons.setMinimumSize(new Dimension(50,90));
    JPanel secondButtons = new JPanel(new GridLayout(1,3));
    curColor.setMinimumSize(new Dimension(700,80));
    curColor.setMaximumSize(new Dimension(700,80));

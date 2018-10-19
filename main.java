@@ -21,13 +21,12 @@ public class main {
     public static void main(String[] args) {
     //Schedule a job for the event-dispatching thread:
     //creating and showing this application's GUI.
-    JFrame frame = new JFrame("Demo");
+    JFrame frame = new JFrame("Paint Simplified");
     frame.setMinimumSize(new Dimension(400,400));
-    frame.setMaximumSize(new Dimension(1200,800));
+    frame.setPreferredSize(new Dimension(750,500));
     frame.setLayout(new BorderLayout());  
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     
-    //ColorChooserDemo.createAndShowGUI(frame);
     Lines2 window = new Lines2(frame); 
     widget w = new widget(window);
     ColorChooserDemo ccd = new ColorChooserDemo(window,w.getCurColor());

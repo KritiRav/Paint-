@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.nio.file.*; 
 import static javax.swing.ScrollPaneConstants.*;
 
-  
+// this class acts as the model
 public class Lines2 extends JPanel
 {
     // Instance variables
@@ -174,7 +174,7 @@ public class Lines2 extends JPanel
             } for(int j = 0; j < rects.size(); j++) {
                 g2.setColor(rects.get(j).colorBorder);
                 if (rects.get(j).isSelected) {
-                    g2.setStroke(new BasicStroke((float)7));
+                    g2.setStroke(new BasicStroke((float)12));
                 } else {
                 g2.setStroke(new BasicStroke((float)rects.get(j).thickness));
                 } g2.draw((Rectangle2D)rects.get(j).r);
@@ -183,7 +183,7 @@ public class Lines2 extends JPanel
             } for(int j = 0; j < circles.size(); j++) {
                 g2.setColor(circles.get(j).colorBorder);
                 if (circles.get(j).isSelected) {
-                    g2.setStroke(new BasicStroke((float)7));
+                    g2.setStroke(new BasicStroke((float)12));
                 } else {
                 g2.setStroke(new BasicStroke((float)circles.get(j).thickness));
                 } g2.draw((Ellipse2D.Double)circles.get(j).c);
@@ -461,6 +461,8 @@ class LineWrangler extends MouseInputAdapter
                 }
                 if (isSelected) {
                 list.get(j).isSelected=true;
+                list.get(j).colorBorder = colorBorder;
+                list.get(j).thickness = thickness;
                 }
                 }
             }
@@ -475,6 +477,9 @@ class LineWrangler extends MouseInputAdapter
                 } 
                 if (isSelected) {
                 rectList.get(j).isSelected=true;
+                rectList.get(j).colorBorder = colorBorder;
+                rectList.get(j).thickness = thickness;
+                rectList.get(j).colorFill = colorFill;
                 } if (isFill) {
                     rectList.get(j).colorFill = colorFill;
                 }
@@ -528,11 +533,14 @@ class LineWrangler extends MouseInputAdapter
             }
             for(int j = 0; j < rectList.size(); j++) {
                 Lines2.Rect rec = rectList.get(j);
-                if(p.getX()>rec.r.getX() && p.getX()<rec.r.getX()+rec.r.getWidth() && p.getY()>rec.r.getY() && p.getY()<=rec.r.getY()+rec.r.getHeight()) {
+                if(rec.r.contains(p.getX(),p.getY())) {
                     
                     haveSelection = true; 
                     start=p;
                     selectedRectangle = rec;
+                    if (isSelected) {
+                        rec.setRect(rec.r.getX(), rec.r.getY(), rec.r.getWidth(), rec.r.getHeight(), colorBorder, thickness, colorFill, true);
+                    }
                     if(!erase) {
                         if (isFill) { rectList.get(j).colorFill = colorFill; }
                     drawingPanel.moveRect(rec, p, end);

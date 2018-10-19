@@ -51,7 +51,7 @@ public class ColorChooserDemo extends JPanel
         super(new BorderLayout());
         //Set up color chooser for setting text color
         l = l_;
-        gridTop = new JPanel(new GridLayout(2,1));
+        gridTop = new JPanel(new GridLayout(1,1));
         curColor = curColor_;
         tcc = new JColorChooser();
         tcc.getSelectionModel().addChangeListener(this);
@@ -64,7 +64,6 @@ public class ColorChooserDemo extends JPanel
     public void stateChanged(ChangeEvent e) {
         Color newColor = tcc.getColor();
         l.wrangler.setBorderCol(newColor); 
-        l.wrangler.setFillCol(newColor);
         //curColor.setBackground(newColor);
         //banner.setForeground(newColor);
     }
@@ -84,6 +83,9 @@ public class ColorChooserDemo extends JPanel
         ColorChoose.addActionListener(new ActionListener(){  
             public void actionPerformed(ActionEvent e){ 
             int result = JOptionPane.showConfirmDialog(null, newContentPane, "Popup pick color", JOptionPane.PLAIN_MESSAGE);
+            ColorChoose.setOpaque(true);
+            ColorChoose.setBackground(l.wrangler.colorBorder);
+            ColorChoose.setBorderPainted(false);
             }  
         });  
         newContentPane.setOpaque(true); //content panes must be opaque

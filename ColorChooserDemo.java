@@ -36,29 +36,36 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.colorchooser.*;
-import java.awt.BorderLayout;
 
 /* ColorChooserDemo.java requires no other files. */
 public class ColorChooserDemo extends JPanel
                               implements ChangeListener {
-
+    private Lines2 l; 
     protected JColorChooser tcc;
-    //protected JLabel banner;
+    public JButton ColorChoose; 
+    private JButton curColor;
+    private JPanel gridTop; 
+    //private JButton color;
 
-    public ColorChooserDemo() {
+    public ColorChooserDemo(Lines2 l_,JButton curColor_) {
         super(new BorderLayout());
         //Set up color chooser for setting text color
+        l = l_;
+        gridTop = new JPanel(new GridLayout(2,1));
+        curColor = curColor_;
         tcc = new JColorChooser();
         tcc.getSelectionModel().addChangeListener(this);
         tcc.setBorder(BorderFactory.createTitledBorder(
                                              "Choose Text Color"));
-
         //add(bannerPanel, BorderLayout.CENTER);
         add(tcc, BorderLayout.PAGE_END);
     }
 
     public void stateChanged(ChangeEvent e) {
         Color newColor = tcc.getColor();
+        l.wrangler.setBorderCol(newColor); 
+        l.wrangler.setFillCol(newColor);
+        //curColor.setBackground(newColor);
         //banner.setForeground(newColor);
     }
     
@@ -67,25 +74,21 @@ public class ColorChooserDemo extends JPanel
      * this method should be invoked from the
      * event-dispatching thread.
      */
-    public static void createAndShowGUI(JFrame frame) {
+    public void createAndShowGUI(JFrame frame) {
         //Create and set up the window.
         
 
         //Create and set up the content pane.
-        JButton ColorChoose = new JButton("Choose Color");
-        JComponent newContentPane = new ColorChooserDemo();
+        ColorChoose = new JButton("Choose Color");
+        JComponent newContentPane = new ColorChooserDemo(l,curColor);
         ColorChoose.addActionListener(new ActionListener(){  
             public void actionPerformed(ActionEvent e){ 
             int result = JOptionPane.showConfirmDialog(null, newContentPane, "Popup pick color", JOptionPane.PLAIN_MESSAGE);
-            if (result == JOptionPane.OK_OPTION) {
-                System.out.println("open box");
-            } else {
-                System.out.println("close");
-            }
             }  
         });  
         newContentPane.setOpaque(true); //content panes must be opaque
-        frame.getContentPane().add(ColorChoose, BorderLayout.PAGE_START);
+        gridTop.add(ColorChoose);
+        frame.getContentPane().add(gridTop, BorderLayout.PAGE_START);
 
         //Display the window.
         frame.pack();

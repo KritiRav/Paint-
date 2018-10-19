@@ -28,15 +28,14 @@ public class main {
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     
     //ColorChooserDemo.createAndShowGUI(frame);
-    Lines2 window = new Lines2();
-    ColorChooserDemo.createAndShowGUI(frame);
+    Lines2 window = new Lines2(frame); 
     widget w = new widget(window);
+    ColorChooserDemo ccd = new ColorChooserDemo(window,w.getCurColor());
+    ccd.createAndShowGUI(frame);
     w.createColorBar(frame);
     frame.getContentPane().add(window.content, BorderLayout.CENTER);
-   //frame.getContentPane().add(window, BorderLayout.CENTER);
     mainMenuView menu = new mainMenuView(window);
     frame.setJMenuBar(menu.menuBar);
-    frame.getContentPane().add(window.buttonsPanel, BorderLayout.SOUTH);
     frame.setVisible(true);
 }
 }   
